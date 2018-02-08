@@ -8,6 +8,7 @@ var input = fs.readFile("input.txt", "utf8", (err, data) => {
   }
   else {
     x = data;
+    console.log(x);
     doAll(x);
     return x;
     }
@@ -21,13 +22,22 @@ function doAll(x) {
   var sum = 0;
   for (var i = 0; i < x.length; i++) {
     var xSplit = x[i].split("\t");
+    xSplit.sort(function(a, b){return b - a});
     console.log(xSplit);
-    xSplit.sort(function(a, b){return a-b});
-    var xSplitLength = Number(xSplit.length) - 1;
-    sum += Number(xSplit[xSplitLength] - xSplit[0]);
-    console.log(sum);
+    var xSplitLength = Number(xSplit.length);
+    console.log("xSplitLength= " + xSplitLength);
+    for (var j = 0; j < xSplitLength; j++) {
+      for (var k = 0; k < xSplitLength; k++) {
+        var divNumber = Number(xSplit[j]/xSplit[k]);
+        console.log(divNumber);
+        if (Number.isInteger(divNumber) && j != k) {
+          sum += xSplit[j]/xSplit[k];
+          console.log(xSplit[j] + " " + xSplit[k]);
+          console.log(sum);
+        }
+      }
+    }
   }
-  console.log(x.length);
   console.log("sum: \n" + sum);
   //console.log("log: \n" + x);
 }
