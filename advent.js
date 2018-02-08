@@ -1,43 +1,40 @@
-const fs = require("fs");
-
-var x;
-
-var input = fs.readFile("input.txt", "utf8", (err, data) => {
-  if (err) {
-    return console.error(err);
+function squaresInCircle(n) {
+  if (n == 0) {
+    return 1;
+  } else {
+    var circle = (n * 2) + 1;
+    var squares = ((circle - 1) * 4);
+    //console.log("loop squares: " + squares);
+    return squares;
   }
-  else {
-    x = data;
-    console.log(x);
-    doAll(x);
-    return x;
-    }
-});
-
-
-
-function doAll(x) {
-  x = x.split("\n");
-  x.pop();
-  var sum = 0;
-  for (var i = 0; i < x.length; i++) {
-    var xSplit = x[i].split("\t");
-    xSplit.sort(function(a, b){return b - a});
-    console.log(xSplit);
-    var xSplitLength = Number(xSplit.length);
-    console.log("xSplitLength= " + xSplitLength);
-    for (var j = 0; j < xSplitLength; j++) {
-      for (var k = 0; k < xSplitLength; k++) {
-        var divNumber = Number(xSplit[j]/xSplit[k]);
-        console.log(divNumber);
-        if (Number.isInteger(divNumber) && j != k) {
-          sum += xSplit[j]/xSplit[k];
-          console.log(xSplit[j] + " " + xSplit[k]);
-          console.log(sum);
-        }
-      }
-    }
-  }
-  console.log("sum: \n" + sum);
-  //console.log("log: \n" + x);
 }
+
+function whereNumber(n) {
+  var currentN = 0;
+  var currentCircle = 0;
+  var squares = 0;
+  var middenPunten = [0, 0, 0, 0];
+  while (currentN < n) {
+    squares = squaresInCircle(currentCircle);
+    currentN += squares;
+    currentCircle ++;
+    console.log(squares);
+  }
+  console.log("n is: " + n);
+  currentCircle --;
+  console.log("n zit in circle: " + currentCircle);
+  var tilesToN = (n - (currentN - squares + 1));
+  console.log("tiles in deze circle tot n: " + tilesToN);
+  var tilesTillCircle = (currentN - squares);
+  console.log("tiles in alle vorige circles: " + tilesTillCircle);
+  for (var i = 0; i < middenPunten.length; i++) {
+    middenPunten[i] = currentN - ((squares/4) * i) - (squares/8);
+    middenPunten[i] = Math.abs(middenPunten[i] - n);
+  }
+  console.log("middenPunten afstand tot n: " + middenPunten);
+  middenPunten.sort(function(a, b){return a - b});
+  var print = currentCircle + middenPunten[0];
+  console.log("antwoord: " + print);
+}
+
+whereNumber(312051);
