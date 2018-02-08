@@ -37,4 +37,10 @@ function whereNumber(n) {
   console.log("antwoord: " + print);
 }
 
-whereNumber(312051);
+var nValue = [0];
+var input = 20;
+var tileCounter = 0;
+while (nValue < input) {
+  tileCounter ++;
+  nValue[tileCounter] = 
+}
