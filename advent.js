@@ -32,7 +32,7 @@ function doAll(x) {
     list[i][2] = Number(newListEntryWeight[1].split(")")[0]);
     list[i][3] = 0;
     list2[i] = [i, list[i][1].slice()];
-    console.log(list[i]);
+    //console.log(list[i]);
   }
   var listWeights = [];
   for (var i = 0; i < list.length; i++) {
@@ -66,6 +66,7 @@ function doAll(x) {
   }
   //console.log(falseWeights);
   var whileCheck = 0
+  var whileCounter = 1;
   console.log(checkDone(list));
   while (whileCheck == 0) {
     if (checkDone(list)) {
@@ -73,13 +74,15 @@ function doAll(x) {
     }
     for (var i = 0; i < list.length; i++) {
       if (list[i][1] == "") {
-        list[i][3] = 1;
-        //console.log(list[i]);
+        if (list[i][3] == 0) {
+            list[i][3] = whileCounter;
+        }
+         //console.log(list[i]);
       } else {
         //console.log(list[i]);
         for (var k = 0; k < list.length; k++) {
           for (var j = 0; j < list[i][1].length; j++) {
-            if (list[k][0] == list[i][1][j] && list[k][3] == 1) {
+            if (list[k][0] == list[i][1][j] && list[k][3] >= 1) {
               //console.log(list[i]);
               list[i][1].splice(j, 1);
               list[i][2] += list[k][2];
@@ -90,6 +93,7 @@ function doAll(x) {
       }
       //console.log(list[i]);
     }
+    whileCounter ++;
   }
   for (var i = 0; i < list.length; i++) {
     console.log(list[i]);
@@ -100,7 +104,7 @@ function doAll(x) {
 function checkDone(list) {
   var checkCounter = 0;
   for (var i = 0; i < list.length; i++) {
-    if (list[i][3] == 0) {
+    if (list[i][3] < 1) {
       checkCounter ++;
       if (checkCounter > 2) {
         return false;
