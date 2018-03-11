@@ -31,6 +31,7 @@ function doAll(x) {
     list[i][0] = newListEntryWeight[0];
     list[i][2] = Number(newListEntryWeight[1].split(")")[0]);
     list[i][3] = 0;
+    list[i][4] = Number(list[i][2]);
     list2[i] = [i, list[i][1].slice()];
     //console.log(list[i]);
   }
@@ -67,7 +68,7 @@ function doAll(x) {
   //console.log(falseWeights);
   var whileCheck = 0
   var whileCounter = 1;
-  console.log(checkDone(list));
+  //console.log(checkDone(list));
   while (whileCheck == 0) {
     if (checkDone(list)) {
       whileCheck = 1;
@@ -96,8 +97,28 @@ function doAll(x) {
     whileCounter ++;
   }
   for (var i = 0; i < list.length; i++) {
-    console.log(list[i]);
-    console.log(list2[i][1]);
+    //console.log(list[i]);
+    //console.log(list2[i][1]);
+  }
+  var weightList = [];
+  for (var i = 0; i < list.length; i++) {
+    if (list2[i][1] != "") {
+      var checkSame = 0;
+      for (var j = 0; j < list.length; j++) {
+        for (var k = 0; k < list2[i].length; k++) {
+          if (list2[i][1][k] == list[j][0]) {
+            checkSame = list[j][4];
+            weightList.push([i, list[i], list2[i], list[j], checkSame]);
+            //console.log(weightList[(weightList.length - 1)]);
+            //console.log(list[i]);
+            //console.log(list[j]);
+          }
+        }
+      }
+    }
+  }
+  for (var i = 0; i < weightList.length; i++) {
+    console.log(weightList[i]);
   }
 }
 
