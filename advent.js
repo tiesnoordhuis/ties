@@ -24,8 +24,12 @@ function doAll(x) {
     console.log(list[i]);
   }
   for (var i = 0; i < list.length; i++) {
-    if (checkCondition(list[i]), list) {
+    if (checkCondition(list[i], list)) {
       var newValue = doProcess(list[i], list);
     }
   }
+}
+
+function checkCondition(element, checkList) {
+  
 }
