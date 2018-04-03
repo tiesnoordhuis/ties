@@ -29,20 +29,14 @@ function doAll(x) {
   for (var i = 0; i < list.length; i++) {
     list2.push(list[i]);
   }
-  for (var i = 0; i < list2.length; i++) {
+  for (var i = 0; i < (list2.length - 1); i++) {
     stepResponse = doStep(list2[i], i, inGarbage, isIgnored);
     inGarbage = stepResponse[0];
     endGarbage = stepResponse[1];
     isIgnored = stepResponse[2];
-    console.log("input:");
-    console.log(list2[i]);
-    console.log("output");
-    console.log(stepResponse);
     if (inGarbage == false && endGarbage == false) {
-      console.log("added");
       calcString += list2[i];
     }
-    console.log("");
   }
   console.log(calcString);
   for (var i = 0; i < calcString.length; i++) {
@@ -50,18 +44,24 @@ function doAll(x) {
     score = scoreResponse[0];
     level = scoreResponse[1];
   }
+  console.log(score);
 }
 
 function calcScore(currentChar, level, score) {
+	var returnArray = [score, level];
   if (currentChar == "{") {
-
+	level ++;
+	score += level;
   } else if (currentChar == "}") {
-
+	level --;
   } else if (currentChar == ",") {
 
   } else {
     console.log("ERROR");
+	console.log(currentChar);
   }
+  returnArray = [score, level];
+  return returnArray;
 }
 
 function doStep(currentChar, i, inGarbage, isIgnored) {
