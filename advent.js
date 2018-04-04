@@ -15,6 +15,8 @@ function doAll(x) {
   var lengths = [];
   var currentPosition = 0;
   var skipSize = 0;
+  var selectedArray = [];
+  var flipedArray = [];
   for (var i = 0; i < input.length; i++) {
 	  lengths[i] = Number(input[i]);
   }
@@ -25,19 +27,17 @@ function doAll(x) {
 	  list[i] = i;
   }
   for (var i = 0; i < lengths.length; i++) {
-	  console.log("currentPosition");
-	  console.log(currentPosition);
-	  var selectedArray = selectArray(list, currentPosition, lengths[i]);
-	  var flipedArray = reverseArray(selectedArray.slice());
+	  selectedArray = selectArray(list, currentPosition, lengths[i]);
+    console.log("manual select array");
+    console.log(currentPosition + "  " + lengths[i]);
+	  flipedArray = reverseArray(selectedArray.slice());
 	  console.log("selectedArray");
-	  console.log(selectedArray[0] + " " + selectedArray[selectedArray.length - 1]);
-	  console.log("flipedArray");
-	  console.log(flipedArray[0] + " " + flipedArray[flipedArray.length - 1]);
+	  console.log(selectedArray[0] + " " + selectedArray[selectedArray.length - 1] + " " + selectedArray.length);
 	  list = insertArrayBackIn(list, flipedArray, currentPosition);
 	  currentPosition = skipToNextPosition(currentPosition, skipSize, lengths[i]);
 	  skipSize ++;
 	  viewList(list);
-  }  
+  }
 }
 
 function viewList(list) {
@@ -81,9 +81,9 @@ function selectArray(list, currentPosition, stepLength) {
 	var returnArrayP1 = [];
 	var returnArrayP2 = [];
 	var overflow = 0;
-	if ((currentPosition + stepLength) > list.length) {
-		returnArrayP1 = list.slice(currentPosition, (list.length - 1));
-		overflow = stepLength - returnArrayP1.length;
+	if ((currentPosition + stepLength) > 255) {
+		returnArrayP1 = list.slice(currentPosition);
+		overflow = ((currentPosition + stepLength) - 256);
 		returnArrayP2 = list.slice(0, overflow);
 		returnArray = returnArrayP1.concat(returnArrayP2);
 	} else {
