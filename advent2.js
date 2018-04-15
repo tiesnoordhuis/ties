@@ -1,110 +1,124 @@
 const fs = require("fs");
 
-var input = fs.readFile("input5.txt", "utf8", (err, data) => {
+var input = fs.readFile("input8.txt", "utf8", (err, data) => {
   if (err) {
     return console.error(err);
   }
   else {
     x = data;
     doAll(x);
-    return x;
     }
 });
 
-var x;
-
 function doAll(x) {
-  var list = x.split("\n");
-  list.pop();
-  for (var i = 0; i < list.length; i++) {
-    var newListEntry = list[i].split(" -> ");
-    //newListEntry[0] = newListEntry[0].split(" ")[0];
-    list[i] = newListEntry;
-    if (list[i].length > 1) {
-      var newListEntrySecond = list[i][1].split(", ");
-      list[i][1] = newListEntrySecond;
-    } else {
-      list[i][1] = [""];
-    }
-    var newListEntryWeight = list[i][0].split(" (");
-    list[i][0] = newListEntryWeight[0];
-    list[i][2] = Number(newListEntryWeight[1].split(")")[0]);
-    list[i][3] = 0;
-    list[i][4] = Number(list[i][2]);
-    list[i][5] = [];
-  }
-  for (var i = 0; i < list.length; i++) {
-    if (list[i][1] != "") {
-      list[i][3] = 1;
-    }
-  }
-  for (var i = 0; i < list.length; i++) {
-    //console.log(list[i]);
-  }
-  var refCounter = 0;
-  var answerArray = [];
-  while (refCounter < 20) {
-    for (var i = 0; i < list.length; i++) {
-      if (list[i][3] == refCounter) {
-        for (var k = 0; k < list[i][1].length; k++) {
-          answerArray[0] = lookupWeight(list[i][1][k], refCounter, list);
-          var alreadySet = 0;
-          for (var j = 0; j < list[i][5].length; j++) {
-            if (list[i][5][j][1] == list[i][1][k]) {
-              alreadySet = 1;
-              //console.log("already set");
-            }
-          }
-          if (answerArray[0][1] == 1 && alreadySet == 0) {
-            list[i][5][(list[i][5].length)] = [answerArray[0][0], answerArray[0][2]];
-          }
-        }
-        //console.log(list[i][5].length);
-        //console.log(list[i][1].length);
-        if (list[i][5].length == list[i][1].length || list[i][3] == 0) {
-          //console.log("hetzelfde");
-          //list[i][3] = refCounter; //niet nodig
-          //console.log(list[i][3]);
-        } else if (list[i][5].length != list[i][1].length) {
-          list[i][3] = (refCounter + 1);
-          //console.log("niet hetzelfde");
-        }
-        //console.log(list[i]);
-      }
-    }
-    for (var i = 0; i < list.length; i++) {
-      if (list[i][3] == refCounter) {
-        var totalWeight = 0;
-        var weightCompare = []
-        for (var k = 0; k < list[i][5].length; k++) {
-          totalWeight += list[i][5][k][0];
-          weightCompare[k] = list[i][5][k][0];
-        }
-        for (var j = 1; j < weightCompare.length; j++) {
-          if (weightCompare[0] != weightCompare[j]) {
-            console.log("weight fout in");
-            console.log(list[i]);
-          }
-        }
-        //console.log(totalWeight);
-        list[i][4] = list[i][2] + totalWeight;
-        //console.log(list[i]);
-      }
-    }
-    //console.log(refCounter);
-    refCounter ++;
+  var input = x.split("");
+  input.pop()
+  var lengths = listTransformAscii(input);
+  lengths = addSuffixToLengths(lengths);
+  var list = createList();
+  var currentPosition = 0;
+  var skipSize = 0;
+  doMultipleRounds(4, list, lengths, currentPosition, skipSize);
+}
+
+function doMultipleRounds(nRounds, list, lengths, currentPosition, skipSize) {
+  for (var i = 0; i < nRounds; i++) {
+    currentPosition = doKnot(list, lengths, currentPosition, skipSize);
   }
 }
 
-function lookupWeight(name, cycle, checkList) {
-  var weight = 0;
-  for (var i = 0; i < checkList.length; i++) {
-    if (checkList[i][0] == name) {
-      if (checkList[i][3] < cycle) {
-        weight = checkList[i][4];
-        return [weight, 1, name];
-      }
-    }
+function doKnot(list, lengths, currentPosition, skipSize) {
+  for (var i = 0; i < lengths.length; i++) {
+    list[i] = list[i] + currentPosition;
+    currentPosition ++;
   }
-  return [weight, 0, name];
+  viewList(list)
+  return currentPosition;
+}
+
+function addSuffixToLengths(inputList) {
+  var outputList = [];
+  var standardSuffix = [17, 31, 73, 47, 23];
+  for (var i = 0; i < inputList.length; i++) {
+    outputList[i] = inputList[i];
+  }
+  outputList = outputList.concat(standardSuffix);
+  return outputList;
+}
+
+function listTransformAscii(inputList) {
+  var outputList = [];
+  for (var i = 0; i < inputList.length; i++) {
+    outputList[i] = inputList[i].charCodeAt(0);
+  }
+  return outputList;
+}
+
+function createList() {
+  var list = [];
+  list.length = 256;
+  for (var i = 0; i < list.length; i++) {
+	  list[i] = i;
+  }
+  return list;
+}
+
+function viewList(list) {
+	console.log("");
+	for (var i = 0; i < list.length; i++) {
+	  console.log(i + "  " + list[i]);
+  }
+}
+
+function insertArrayBackIn(list, flipedArray, currentPosition) {
+	var listT = list.slice();
+	if ((currentPosition + flipedArray.length) > 255) {
+		var flipedArrayP1 = [];
+		var flipedArrayP2 = [];
+		flipedArrayP1 = flipedArray.slice(0, (255 - currentPosition));
+		flipedArrayP2 = flipedArray.slice((255 - currentPosition));
+		listT.splice(currentPosition);
+		listT = listT.concat(flipedArrayP1);
+		listT.splice(0, flipedArrayP2.length);
+		listT = flipedArrayP2.concat(listT);
+		} else {
+			var endOfList = listT.slice((currentPosition + flipedArray.length));
+			listT.splice(currentPosition);
+			listT = listT.concat(flipedArray);
+			listT = listT.concat(endOfList);
+	}
+	return listT;
+}
+
+function skipToNextPosition(currentPosition, skipSize, length) {
+	var returnPosition = 0;
+	returnPosition = currentPosition + skipSize + length;
+	if (returnPosition > 255) {
+		returnPosition -= 256;
+	}
+	return returnPosition;
+}
+
+function selectArray(list, currentPosition, stepLength) {
+	var returnArray = [];
+	var returnArrayP1 = [];
+	var returnArrayP2 = [];
+	var overflow = 0;
+	if ((currentPosition + stepLength) > 255) {
+		returnArrayP1 = list.slice(currentPosition);
+		overflow = ((currentPosition + stepLength) - 256);
+		returnArrayP2 = list.slice(0, overflow);
+		returnArray = returnArrayP1.concat(returnArrayP2);
+	} else {
+		returnArray = list.slice(currentPosition, (stepLength + currentPosition));
+	}
+	return returnArray;
+}
+
+function reverseArray(array) {
+	var arrayReference = array.slice();
+	for (var i = 0; i < array.length; i++) {
+		array[i] = arrayReference[((array.length - 1) - i)];
+	}
+	return array;
 }
