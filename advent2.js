@@ -16,24 +16,57 @@ function doAll(x) {
   var lengths = listTransformAscii(input);
   lengths = addSuffixToLengths(lengths);
   var list = createList();
+  var checkSum = 0;
+  for (var i = 0; i < list.length; i++) {
+    checkSum += list[i];
+  }
+  console.log(checkSum);
   var currentPosition = 0;
   var skipSize = 0;
-  doMultipleRounds(4, list, lengths, currentPosition, skipSize);
+  var finalArray = doMultipleRounds(4, list, lengths, currentPosition, skipSize);
+  checkSum = 0;
+  for (var i = 0; i < finalArray[0].length; i++) {
+    checkSum +=finalArray[0][i];
+  }
+  console.log(checkSum);
 }
 
 function doMultipleRounds(nRounds, list, lengths, currentPosition, skipSize) {
+  var returnArray = [];
   for (var i = 0; i < nRounds; i++) {
-    currentPosition = doKnot(list, lengths, currentPosition, skipSize);
+    returnArray = doKnots(list, lengths, currentPosition, skipSize);
+    list = returnArray[0];
+    lengths = returnArray[1];
+    currentPosition = returnArray[2];
+    skipSize = returnArray[3];
   }
+  return returnArray;
 }
 
-function doKnot(list, lengths, currentPosition, skipSize) {
+function doKnots(list, lengths, currentPosition, skipSize) {
+  var returnArray = [];
   for (var i = 0; i < lengths.length; i++) {
-    list[i] = list[i] + currentPosition;
-    currentPosition ++;
+    returnArray = doKnot(list, lengths, currentPosition, skipSize, i);
+    list = returnArray[0];
+    lengths = returnArray[1];
+    currentPosition = returnArray[2];
+    skipSize = returnArray[3];
   }
-  viewList(list)
-  return currentPosition;
+  return returnArray;
+}
+
+function doKnot(list, lengths, currentPosition, skipSize, i) {
+  var returnArray = [];
+  var selectedArray = selectArray(list, currentPosition, lengths[i]);
+  var reversedArray = reverseArray(selectedArray);
+  list = insertArrayBackIn(list, reversedArray, currentPosition);
+  currentPosition = skipToNextPosition(currentPosition, skipSize, lengths[i]);
+  skipSize ++;
+  returnArray[0] = list;
+  returnArray[1] = lengths;
+  returnArray[2] = currentPosition;
+  returnArray[3] = skipSize;
+  return returnArray;
 }
 
 function addSuffixToLengths(inputList) {
@@ -70,30 +103,47 @@ function viewList(list) {
   }
 }
 
-function insertArrayBackIn(list, flipedArray, currentPosition) {
-	var listT = list.slice();
-	if ((currentPosition + flipedArray.length) > 255) {
-		var flipedArrayP1 = [];
-		var flipedArrayP2 = [];
-		flipedArrayP1 = flipedArray.slice(0, (255 - currentPosition));
-		flipedArrayP2 = flipedArray.slice((255 - currentPosition));
-		listT.splice(currentPosition);
-		listT = listT.concat(flipedArrayP1);
-		listT.splice(0, flipedArrayP2.length);
-		listT = flipedArrayP2.concat(listT);
-		} else {
-			var endOfList = listT.slice((currentPosition + flipedArray.length));
-			listT.splice(currentPosition);
-			listT = listT.concat(flipedArray);
-			listT = listT.concat(endOfList);
-	}
-	return listT;
+function insertArrayBackIn(list, reversedArray, currentPosition) {
+	var listP1 = [];
+  var listP2 = [];
+  var listP3 = [];
+  var returnArray = [];
+  var debug = "";
+	if ((currentPosition + reversedArray.length) > 256) {
+    var reversedArrayP1 = reversedArray.slice(0, (256 - currentPosition))
+		var reversedArrayP2 = reversedArray.slice((256 - currentPosition));
+		listP1 = reversedArrayP2;
+		listP2 = list.slice(reversedArrayP2.length, currentPosition);
+		listP3 = reversedArrayP1;
+		returnArray = listP1.concat(listP2);
+    returnArray = returnArray.concat(listP3);
+    debug = "reversedArray wraped around";
+  } else if ((currentPosition + reversedArray.length) <= 256) {
+    listP1 = list.slice(0, currentPosition);
+    listP2 = reversedArray;
+    listP3 = list.slice((listP1.length + listP2.length))
+    returnArray = listP1.concat(listP2);
+    returnArray = returnArray.concat(listP3);
+    debug = "reversedArray was short";
+	} else {
+    console.log("fout in insertArrayBackIn");
+  }
+  if (returnArray.length != 256) {
+    console.log(debug);
+    console.log(currentPosition);
+    console.log(reversedArray.length);
+    for (var i = 0; i < list.length; i++) {
+      console.log(list[i] + "  " + returnArray[i]);
+
+    }
+  }
+	return returnArray;
 }
 
 function skipToNextPosition(currentPosition, skipSize, length) {
 	var returnPosition = 0;
 	returnPosition = currentPosition + skipSize + length;
-	if (returnPosition > 255) {
+	while (returnPosition > 255) {
 		returnPosition -= 256;
 	}
 	return returnPosition;
@@ -109,16 +159,15 @@ function selectArray(list, currentPosition, stepLength) {
 		overflow = ((currentPosition + stepLength) - 256);
 		returnArrayP2 = list.slice(0, overflow);
 		returnArray = returnArrayP1.concat(returnArrayP2);
-	} else {
+	} else if ((currentPosition + stepLength) <= 255) {
 		returnArray = list.slice(currentPosition, (stepLength + currentPosition));
-	}
+	} else {
+    console.log("fout in select array");
+  }
 	return returnArray;
 }
 
 function reverseArray(array) {
-	var arrayReference = array.slice();
-	for (var i = 0; i < array.length; i++) {
-		array[i] = arrayReference[((array.length - 1) - i)];
-	}
-	return array;
+	var arrayReference = array.reverse();
+	return arrayReference;
 }
