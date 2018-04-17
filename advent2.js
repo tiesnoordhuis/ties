@@ -23,12 +23,45 @@ function doAll(x) {
   console.log(checkSum);
   var currentPosition = 0;
   var skipSize = 0;
-  var finalArray = doMultipleRounds(4, list, lengths, currentPosition, skipSize);
+  var finalArray = doMultipleRounds(64, list, lengths, currentPosition, skipSize);
   checkSum = 0;
   for (var i = 0; i < finalArray[0].length; i++) {
     checkSum +=finalArray[0][i];
   }
   console.log(checkSum);
+  var finalHash = createDenseHashes(finalArray[0], 16);
+  console.log(finalHash);
+  var finalHex = makeHexNum(finalHash);
+  console.log(finalHex);
+  var testArray = [65, 27, 9, 1, 4, 3, 40, 50, 91, 7, 6, 0, 2, 5, 68, 22];
+  //console.log(createDenseHash(testArray, 0));
+}
+
+function makeHexNum(hash) {
+  var hexString = []
+  for (var i = 0; i < hash.length; i++) {
+    hexString[i] = hash[i].toString(16);
+  }
+  var returnString = hexString.join("");
+  return returnString;
+}
+
+function createDenseHashes(list, steps) {
+  var outputArray = [];
+  for (var i = 0; i < steps; i++) {
+    outputArray[i] = createDenseHash(list, i);
+  }
+  return outputArray;
+}
+
+function createDenseHash(list, step) {
+  var beginArray = list.slice((16 * step), ((16 * (step + 1)) - 0));
+  console.log(beginArray);
+  var output = beginArray[0];
+  for (var i = 1; i < beginArray.length; i++) {
+    output = output ^ beginArray[i];
+  }
+  return output;
 }
 
 function doMultipleRounds(nRounds, list, lengths, currentPosition, skipSize) {
