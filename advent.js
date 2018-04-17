@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-var input = fs.readFile("input8.txt", "utf8", (err, data) => {
+var input = fs.readFile("input9.txt", "utf8", (err, data) => {
   if (err) {
     return console.error(err);
   }
@@ -12,90 +12,112 @@ var input = fs.readFile("input8.txt", "utf8", (err, data) => {
 
 function doAll(x) {
   var input = x.split(",");
-  var lengths = [];
-  var currentPosition = 0;
-  var skipSize = 0;
-  var selectedArray = [];
-  var flipedArray = [];
+  input[(input.length - 1)] = "se";
+  var nAxis = 0;
+  var nwAxis = 0;
+  var neAxis = 0;
+  var maxSteps = 0;
+  var currentSteps = 0;
   for (var i = 0; i < input.length; i++) {
-	  lengths[i] = Number(input[i]);
+    var stepArray = doStep(input[i]);
+    nAxis += stepArray[0];
+    nwAxis += stepArray[1];
+    neAxis += stepArray[2];
+    currentSteps = distanceToPoint(nAxis, nwAxis, neAxis);
+    if (currentSteps > maxSteps) {
+      maxSteps = currentSteps;
+    }
   }
-  console.log(lengths);
-  var list = [];
-  list.length = 256;
-  for (var i = 0; i < list.length; i++) {
-	  list[i] = i;
+  console.log(nAxis);
+  console.log(nwAxis);
+  console.log(neAxis);
+  var distanceAnswer = distanceToPoint(nAxis, nwAxis, neAxis);
+  console.log(maxSteps);
+}
+
+function distanceToPoint(nAxis, nwAxis, neAxis) {
+  var middleAxis = 0;
+  var leftAxis = 0;
+  var rightAxis = 0;
+  if (nAxis >= 0 ) {
+    if (nwAxis >= 0) {
+      if (neAxis >= 0) {
+        middleAxis = nAxis;
+        leftAxis = nwAxis;
+        rightAxis = neAxis;
+      } else if (neAxis < 0) {
+        middleAxis = nwAxis;
+        leftAxis = neAxis;
+        rightAxis = nAxis;
+      }
+    } else if (nwAxis < 0) {
+      if (neAxis >= 0) {
+        middleAxis = neAxis;
+        leftAxis = nAxis;
+        rightAxis = nwAxis;
+      } else if (neAxis < 0) {
+        return specialCase(nAxis, nwAxis, neAxis);
+      }
+    }
+  } else if (nAxis < 0) {
+    if (nwAxis >= 0) {
+      if (neAxis >= 0) {
+        return specialCase(nAxis, nwAxis, neAxis);
+      } else if (neAxis < 0) {
+        middleAxis = neAxis;
+        leftAxis = nAxis;
+        rightAxis = nwAxis;
+      }
+    } else if (nwAxis < 0) {
+      if (neAxis >= 0) {
+        middleAxis = nwAxis;
+        leftAxis = neAxis;
+        rightAxis = nAxis;
+      } else if (neAxis < 0) {
+        middleAxis = nAxis;
+        leftAxis = nwAxis;
+        rightAxis = neAxis;
+      }
+    }
   }
-  for (var i = 0; i < lengths.length; i++) {
-	  selectedArray = selectArray(list, currentPosition, lengths[i]);
-    console.log("manual select array");
-    console.log(currentPosition + "  " + lengths[i]);
-	  flipedArray = reverseArray(selectedArray.slice());
-	  console.log("selectedArray");
-	  console.log(selectedArray[0] + " " + selectedArray[selectedArray.length - 1] + " " + selectedArray.length);
-	  list = insertArrayBackIn(list, flipedArray, currentPosition);
-	  currentPosition = skipToNextPosition(currentPosition, skipSize, lengths[i]);
-	  skipSize ++;
-	  viewList(list);
+  middleAxis = Math.abs(middleAxis);
+  leftAxis = Math.abs(leftAxis);
+  rightAxis = Math.abs(rightAxis);
+  if (leftAxis < rightAxis) {
+    return (middleAxis + rightAxis);
+  } else if (rightAxis <= leftAxis) {
+    return (middleAxis + leftAxis);
   }
 }
 
-function viewList(list) {
-	console.log("");
-	for (var i = 0; i < list.length; i++) {
-	  console.log(i + "  " + list[i]);
+function specialCase(nAxis, nwAxis, neAxis) {
+  var sortArray = [Math.abs(nAxis), Math.abs(nwAxis), Math.abs(neAxis)];
+  sortArray.sort(compare);
+  var ans = sortArray[2] - sortArray[0]
+  return ans;
+}
+
+function compare(a, b) {
+  return a - b;
+}
+
+function doStep(direction) {
+  var returnArray = [0, 0, 0];
+  if (direction === "n") {
+    returnArray[0] = 1;
+  } else if (direction === "s") {
+    returnArray[0] = -1;
+  } else if (direction === "nw") {
+    returnArray[1] = 1;
+  } else if (direction === "se") {
+    returnArray[1] = -1;
+  } else if (direction === "ne") {
+    returnArray[2] = 1;
+  } else if (direction === "sw") {
+    returnArray[2] = -1;
+  } else {
+    console.log("error");
+    console.log(direction);
   }
-}
-
-function insertArrayBackIn(list, flipedArray, currentPosition) {
-	var listT = list.slice();
-	if ((currentPosition + flipedArray.length) > 255) {
-		var flipedArrayP1 = [];
-		var flipedArrayP2 = [];
-		flipedArrayP1 = flipedArray.slice(0, (255 - currentPosition));
-		flipedArrayP2 = flipedArray.slice((255 - currentPosition));
-		listT.splice(currentPosition);
-		listT = listT.concat(flipedArrayP1);
-		listT.splice(0, flipedArrayP2.length);
-		listT = flipedArrayP2.concat(listT);
-		} else {
-			var endOfList = listT.slice((currentPosition + flipedArray.length));
-			listT.splice(currentPosition);
-			listT = listT.concat(flipedArray);
-			listT = listT.concat(endOfList);
-	}
-	return listT;
-}
-
-function skipToNextPosition(currentPosition, skipSize, length) {
-	var returnPosition = 0;
-	returnPosition = currentPosition + skipSize + length;
-	if (returnPosition > 255) {
-		returnPosition -= 256;
-	}
-	return returnPosition;
-}
-
-function selectArray(list, currentPosition, stepLength) {
-	var returnArray = [];
-	var returnArrayP1 = [];
-	var returnArrayP2 = [];
-	var overflow = 0;
-	if ((currentPosition + stepLength) > 255) {
-		returnArrayP1 = list.slice(currentPosition);
-		overflow = ((currentPosition + stepLength) - 256);
-		returnArrayP2 = list.slice(0, overflow);
-		returnArray = returnArrayP1.concat(returnArrayP2);
-	} else {
-		returnArray = list.slice(currentPosition, (stepLength + currentPosition));
-	}
-	return returnArray;
-}
-
-function reverseArray(array) {
-	var arrayReference = array.slice();
-	for (var i = 0; i < array.length; i++) {
-		array[i] = arrayReference[((array.length - 1) - i)];
-	}
-	return array;
+  return returnArray;
 }
