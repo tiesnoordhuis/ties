@@ -21,24 +21,16 @@ function doAll(x) {
     for (var j = 0; j < list[i][1].length; j++) {
       list[i][1][j] = Number(list[i][1][j]);
     }
-    console.log(list[i]);
   }
-  var connectedPrograms = [0];
-  var checkLength = 0;
-  while (checkLength < connectedPrograms.length) {
-    checkLength = connectedPrograms.length;
-    for (var i = 0; i < list.length; i++) {
-      var checkArray = checkConnection(list[i], list, connectedPrograms);
-      if (checkArray[0] && connectedPrograms.includes(checkArray[1]) === false) {
-        connectedPrograms.push(checkArray[1]);
-      }
-    }
-    console.log(connectedPrograms);
+  var totalGroups = 0;
+  var connectedPrograms = [];
+  while (list.length > 0) {
+    connectedPrograms[0] = list[0][0];
+    connectedPrograms = checkConnectionGroup(list, connectedPrograms);
+    list = deleteGroupFromList(list, connectedPrograms);
+    totalGroups ++;
   }
-  for (var i = 0; i < connectedPrograms.length; i++) {
-    console.log(connectedPrograms[i]);
-  }
-  console.log(connectedPrograms.length);
+  console.log(totalGroups);
 }
 
 function checkConnection(program, list, connectedPrograms) {
@@ -52,4 +44,29 @@ function checkConnection(program, list, connectedPrograms) {
     }
   }
   return returnArray;
+}
+
+function checkConnectionGroup(list, connectedPrograms) {
+  var checkLength = 0;
+  while (checkLength < connectedPrograms.length) {
+    checkLength = connectedPrograms.length;
+    for (var i = 0; i < list.length; i++) {
+      var checkArray = checkConnection(list[i], list, connectedPrograms);
+      if (checkArray[0] && connectedPrograms.includes(checkArray[1]) === false) {
+        connectedPrograms.push(checkArray[1]);
+      }
+    }
+  }
+  return connectedPrograms;
+}
+
+function deleteGroupFromList(list, connectedPrograms) {
+  for (var i = 0; i < connectedPrograms.length; i++) {
+    for (var j = 0; j < list.length; j++) {
+      if (connectedPrograms[i] === list[j][0]) {
+        list.splice(j, 1);
+      }
+    }
+  }
+  return list;
 }
