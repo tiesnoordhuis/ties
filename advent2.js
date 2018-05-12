@@ -24,11 +24,6 @@ function doAll(x) {
   var currentPosition = 0;
   var skipSize = 0;
   var finalArray = doMultipleRounds(64, list, lengths, currentPosition, skipSize);
-  checkSum = 0;
-  for (var i = 0; i < finalArray[0].length; i++) {
-    checkSum +=finalArray[0][i];
-  }
-  console.log(checkSum);
   var finalHash = createDenseHashes(finalArray[0], 16);
   console.log(finalHash);
   var finalHex = makeHexNum(finalHash);
