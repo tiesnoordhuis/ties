@@ -39,7 +39,135 @@ function doAll(x) {
     }
   }
   var answer = countSquares(Hash);
-  console.log(answer);
+  console.log("part 1, amount of spaces used: " + answer);
+  var answer2 = countGroups(Hash);
+  console.log("part 2, amount of groups: " + answer2);
+}
+
+function countGroups(Hash) {
+  var checkGrid = makeCheckGrid(Hash);
+  var stillCounting = true;
+  var nGroups = 0;
+  while (stillCounting) {
+    var group = findNextGroup(checkGrid);
+    checkGrid = removeGroup(group, checkGrid);
+    stillCounting = checkGroupsLeft(checkGrid);
+    nGroups ++;
+  }
+  return nGroups;
+}
+
+function checkGroupsLeft(grid) {
+  for (var i = 0; i < grid.length; i++) {
+    for (var j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === "1") {
+        return true
+      }
+    }
+  }
+  return false;
+}
+
+function removeGroup(group, grid) {
+  var returnArray = grid.slice();
+  for (var i = 0; i < group.length; i++) {
+    var x = Number(group[i][0]);
+    var y = Number(group[i][1]);
+    returnArray[x][y] = "0";
+  }
+  return returnArray;
+}
+
+function findNextGroup(grid) {
+  var groupStart = findNextGroupStart(grid);
+  var group = [groupStart];
+  var groupIncomplete = true;
+  while (groupIncomplete) {
+    var nothingAdded = true;
+    var groupLength = group.length;
+    for (var i = 0; i < groupLength; i++) {
+      var newInstanceGroups = checkAdjacent(group[i], grid);
+      var newInstanceGroupsLength = newInstanceGroups.length;
+      for (var j = 0; j < newInstanceGroupsLength; j++) {
+        var newInstanceGroup = newInstanceGroups[j];
+        if (instanceNotInGroup(newInstanceGroup, group)) {
+          group.push(newInstanceGroup);
+          nothingAdded = false;
+        }
+      }
+    }
+    if (nothingAdded) {
+      groupIncomplete = false;
+    }
+  }
+  console.log("group complete");
+  console.log(group);
+  return group;
+}
+
+function logStartWhile(groupLog, gridLog) {
+  console.log("length of group at start: " + groupLog.length);
+  for (var i = 0; i < groupLog.length; i++) {
+    console.log("group at index " + i);
+    console.log(groupLog[i]);
+  }
+}
+
+function instanceNotInGroup(newInstance, group) {
+  for (var i = 0; i < group.length; i++) {
+    if (group[i][0] === newInstance[0] && group[i][1] === newInstance[1]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function checkAdjacent(instance, grid) {
+  var returnArray = [];
+  var y = Number(instance[0]);
+  var x = Number(instance[1]);
+  if (y != 0) {
+    if (grid[(y - 1)][x] === "1") {
+      returnArray.push([(y - 1), x]);
+    }
+  }
+  if (y != 127) {
+    if (grid[(y + 1)][x] === "1") {
+      returnArray.push([(y + 1), x]);
+    }
+  }
+  if (x != 0) {
+    if (grid[y][(x - 1)] === "1") {
+      returnArray.push([y, (x - 1)]);
+    }
+  }
+  if (x != 127) {
+    if (grid[y][(x + 1)] === "1") {
+      returnArray.push([y, (x + 1)]);
+    }
+  }
+  return returnArray;
+}
+
+function findNextGroupStart(grid) {
+  var groupStart = [0, 0];
+  for (var i = 0; i < grid.length; i++) {
+    for (var j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === "1") {
+        groupStart = [i, j];
+        return groupStart;
+      } else if (grid[i][j] === "0") {
+
+      } else {
+        console.log("geen legit value maar: " + grid[i][j] + typeof grid[i][j]);
+      }
+    }
+  }
+}
+
+function makeCheckGrid(grid) {
+  var returnArray = grid.slice();
+  return returnArray;
 }
 
 function countSquares(disk) {
@@ -81,7 +209,11 @@ function calcHash(hashInput) {
   console.log("final hex hash: " + finalHex);
   var bitHash = makeBitHash(finalHex);
   console.log("final bit hash: " + bitHash);
-  return bitHash;
+  var bitHashArray = [];
+  for (var i = 0; i < bitHash.length; i++) {
+    bitHashArray[i] = bitHash[i]
+  }
+  return bitHashArray;
 }
 
 function makeBitHash(hexHash) {
