@@ -3,7 +3,7 @@ const factorB = 48271;
 const divider = 2147483647;
 const startValueA = 679;
 const startValueB = 771;
-const totalRounds = 40000000;
+const totalRounds = 5000000;
 
 doAll(factorA, factorB, divider, startValueA, startValueB, totalRounds);
 
@@ -12,14 +12,29 @@ function doAll(factorA, factorB, divider, startValueA, startValueB, totalRounds)
   var currentValueB = startValueB;
   var matches = 0;
   for (var round = 0; round < totalRounds; round++) {
-    currentValueA = calcNextValue(factorA, divider, currentValueA);
-    currentValueB = calcNextValue(factorB, divider, currentValueB);
+    var valueAFailed = true;
+    while (valueAFailed) {
+      currentValueA = calcNextValue(factorA, divider, currentValueA);
+      valueAFailed = checkCriteria(currentValueA, 4);
+    }
+    var valueBFailed = true;
+    while (valueBFailed) {
+      currentValueB = calcNextValue(factorB, divider, currentValueB);
+      valueBFailed = checkCriteria(currentValueB, 8)
+    }
     if (checkMatch(currentValueA, currentValueB)) {
       matches ++;
       console.log("match found in round: " + round);
     }
   }
   console.log("total amount of matches found: " + matches);
+}
+
+function checkCriteria(value, criteria) {
+  if ((value % criteria) === 0) {
+    return false;
+  }
+  return true;
 }
 
 function calcNextValue(factor, divider, startValue) {
