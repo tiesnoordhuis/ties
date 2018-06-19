@@ -12,6 +12,7 @@ var input = fs.readFile("input12.txt", "utf8", (err, data) => {
 
 function doAll(x) {
   var dancers = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"];
+  console.log(dancers.join(""));
   if (dancers.length != 16) {
     console.log("dancers ini wrong length");
   }
@@ -24,9 +25,13 @@ function doAll(x) {
     dancemoves[i][1] = input[i].slice(1);
     //console.log(dancemoves[i]);
   }
-  for (var l = 0; l < 1000000000; l++) {
-    console.log(l);
+  var buildingCompacted = [];
+  buildingCompacted[0] = [false];
+  console.log(buildingCompacted);
     for (var i = 0; i < dancemoves.length; i++) {
+      var dancemovesSingle = dancemoves[i][0];
+      console.log(dancemovesSingle);
+      //buildingCompacted = checkBegining(i, dancers, dancemovesSingle, buildingCompacted);
       switch (dancemoves[i][0]) {
         case "s": {
           //console.log("doe spin");
@@ -38,7 +43,6 @@ function doAll(x) {
             dancers.pop();
           }
           dancers = end.concat(dancers);
-          break;
         }
         case "x": {
           //console.log("doe exchange");
@@ -50,9 +54,9 @@ function doAll(x) {
           let temp = dancers[n[0]];
           dancers.splice(n[0], 1, dancers[n[1]]);
           dancers.splice(n[1], 1, temp);
-          break;
         }
         case "p": {
+          var compactEnd = true;
           //console.log("doe partner");
           //console.log(dancers.join());
           let n = dancemoves[i][1].split("/");
@@ -66,15 +70,46 @@ function doAll(x) {
           let temp = dancers[n[0]];
           dancers.splice(n[0], 1, dancers[n[1]]);
           dancers.splice(n[1], 1, temp);
-          break;
         }
-        default: {
-          console.log("unkown case");
-          console.log("op positie: " + i);
-          console.log("met instructie: " + dancemoves[i]);
-        }
+        //buildingCompacted = checkEnding(i, dancers, dancemovesSingle, buildingCompacted);
       }
+      console.log(dancers);
     }
-  }
   console.log(dancers.join(""));
+  for (var i = 0; i < dancersRef.length; i++) {
+    dancersRef[i]
+  }
+}
+
+function checkBegining(i, dancers, dancemovesSingle, buildingCompacted) {
+  var returnArray = [];
+  if (buildingCompacted[0][0]) {
+    returnArray[0] = [true];
+    return returnArray;
+  } else if (dancemovesSingle === "p") {
+    returnArray[0] = [false];
+    return returnArray;
+  } else {
+    returnArray[0] = [true];
+    console.log(i);
+    console.log(dancers);
+    return returnArray;
+  }
+}
+
+function checkEnding(i, dancers, dancemovesSingle, buildingCompacted) {
+  var returnArray = [];
+  if (buildingCompacted[0][0]) {
+    if (dancemovesSingle === "p") {
+      console.log(i);
+      console.log(dancers);
+      returnArray[0] = [false];
+    } else {
+      returnArray[0] = [true];
+    }
+    return returnArray
+  } else {
+    returnArray[0] = [false];
+    return returnArray;
+  }
 }

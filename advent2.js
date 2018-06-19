@@ -1,63 +1,78 @@
-const factorA = 16807;
-const factorB = 48271;
-const divider = 2147483647;
-const startValueA = 679;
-const startValueB = 771;
-const totalRounds = 5000000;
+const fs = require("fs");
 
-doAll(factorA, factorB, divider, startValueA, startValueB, totalRounds);
-
-function doAll(factorA, factorB, divider, startValueA, startValueB, totalRounds) {
-  var currentValueA = startValueA;
-  var currentValueB = startValueB;
-  var matches = 0;
-  for (var round = 0; round < totalRounds; round++) {
-    var valueAFailed = true;
-    while (valueAFailed) {
-      currentValueA = calcNextValue(factorA, divider, currentValueA);
-      valueAFailed = checkCriteria(currentValueA, 4);
-    }
-    var valueBFailed = true;
-    while (valueBFailed) {
-      currentValueB = calcNextValue(factorB, divider, currentValueB);
-      valueBFailed = checkCriteria(currentValueB, 8)
-    }
-    if (checkMatch(currentValueA, currentValueB)) {
-      matches ++;
-      console.log("match found in round: " + round);
-    }
+var input = fs.readFile("input12.txt", "utf8", (err, data) => {
+  if (err) {
+    return console.error(err);
   }
-  console.log("total amount of matches found: " + matches);
+  else {
+    x = data;
+    doAll(x);
+    }
+});
+
+var compact = [];
+
+function doAll(x) {
+  var dancers = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"];
+  console.log(dancers.join(""));
+  var input = x.split(",");
+  var dancemoves = makeDancemoves(input);
+  var dancersRef = []
+  for (var cycle = 0; cycle < array.length; cycle++) {
+    dancersRef[cycle] = dancers.slice();
+    for (var i = 0; i < dancemoves.length; i++) {
+      dancers = doDancemove(dancers, dancemoves[i]);
+      console.log(dancers.join(""));
+      console.log(compact);
+    }
+    console.log(dancers.join(""));
+  }
 }
 
-function checkCriteria(value, criteria) {
-  if ((value % criteria) === 0) {
-    return false;
+function doDancemove(dancers, dancemovesSingle) {
+  compact[0] = [true];
+  if (dancemovesSingle[0] === "s") {
+    let n = dancemovesSingle[1];
+    //console.log(" spin doen met " + n);
+    let end = dancers.slice(-n);
+    for (var j = 0; j < n; j++) {
+      dancers.pop();
+    }
+    dancers = end.concat(dancers);
+    return dancers;
+  } else if (dancemovesSingle[0] === "x") {
+    let n = dancemovesSingle[1].split("/");
+    n[0] = Number(n[0]);
+    n[1] = Number(n[1]);
+    //console.log("exchange met values " + n);
+    let temp = dancers[n[0]];
+    dancers.splice(n[0], 1, dancers[n[1]]);
+    dancers.splice(n[1], 1, temp);
+    return dancers;
+  } else if (dancemovesSingle[0] === "p") {
+    let n = dancemovesSingle[1].split("/");
+    //console.log("met  parteners " + n);
+    n[0] = dancers.findIndex((dancer) => {
+      return n[0] == dancer;
+    });
+    n[1] = dancers.findIndex((dancer) => {
+      return n[1] == dancer;
+    });
+    let temp = dancers[n[0]];
+    dancers.splice(n[0], 1, dancers[n[1]]);
+    dancers.splice(n[1], 1, temp);
+    return dancers;
+  } else {
+    console.log("foute input");
   }
-  return true;
 }
 
-function calcNextValue(factor, divider, startValue) {
-  var returnValue = startValue * factor;
-  returnValue = returnValue % divider;
-  return returnValue;
-}
-
-function checkMatch(valueA, valueB) {
-  var valueABit = valueA.toString(2);
-  var valueBBit = valueB.toString(2);
-  while (valueABit.length < 16) {
-    //console.log("valueABit too short, will be lengthend, currently: " + valueABit);
-    valueABit = "0" + valueABit;
+function makeDancemoves(input) {
+  var returnDancemoves = [];
+  for (var i = 0; i < input.length; i++) {
+    returnDancemoves[i] = [];
+    returnDancemoves[i][0] = input[i].slice(0, 1);
+    returnDancemoves[i][1] = input[i].slice(1);
   }
-  while (valueBBit.length < 16) {
-    //console.log("valueBBit too short, will be lengthend, currently: " + valueBBit);
-    valueBBit = "0" + valueBBit;
-  }
-  valueABit = valueABit.slice(-16);
-  valueBBit = valueBBit.slice(-16);
-  if (valueABit === valueBBit) {
-    return true;
-  }
-  return false;
+  return returnDancemoves
 }
