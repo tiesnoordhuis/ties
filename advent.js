@@ -25,6 +25,7 @@ function doAll(x) {
     //console.log(dancemoves[i]);
   }
   for (var l = 0; l < 1000000000; l++) {
+    console.log(l);
     for (var i = 0; i < dancemoves.length; i++) {
       switch (dancemoves[i][0]) {
         case "s": {
