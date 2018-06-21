@@ -1,10 +1,20 @@
 function doAll(loop) {
+  var buffer = [];
+  buffer[0] = [];
+  buffer[1] = 0;
+  for (var step = 0; step < 2018; step++) {
+    console.log("step " + step);
+    buffer = addStepToBuffer(step, buffer, loop);
+    console.log("new position " + buffer[1]);
+  }
+  var valueAfter2017 = findStep1Value(buffer);
+  console.log(valueAfter2017);
   var bufferIndex = 0;
   var last0Index = 0;
   for (var cycle = 0; cycle < 50000000; cycle++) {
     bufferIndex = calcIndex(bufferIndex, cycle, loop);
-    //console.log(bufferIndex);
     if (bufferIndex === 1) {
+      console.log(bufferIndex);
       last0Index = cycle;
     }
     bufferIndex ++;
