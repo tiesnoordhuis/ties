@@ -1,19 +1,33 @@
 function doAll(loop) {
-  var buffer = [];
-  buffer[0] = [];
-  buffer[1] = 0;
-  for (var step = 0; step < 50000000; step++) {
-    console.log("step " + step);
-    buffer = addStepToBuffer(step, buffer, loop);
-    //console.log("new position " + buffer[1]);
+  var bufferIndex = 0;
+  var last0Index = 0;
+  for (var cycle = 0; cycle < 50000000; cycle++) {
+    bufferIndex = calcIndex(bufferIndex, cycle, loop);
+    //console.log(bufferIndex);
+    if (bufferIndex === 1) {
+      last0Index = cycle;
+    }
+    bufferIndex ++;
   }
-  var valueAfter2017 = findStep1Value(buffer);
-  console.log(valueAfter2017);
+  console.log(last0Index);
+}
+
+function calcIndex(buffer, step, loop) {
+  if (buffer === 0) {
+    return 0;
+  }
+  var temp = loop % step;
+  temp += buffer;
+  if (temp > step) {
+    temp -= step;
+    return temp;
+  }
+  return temp;
 }
 
 function findStep1Value(buffer) {
   var temp = buffer[0].findIndex((element) => {
-    return element === 0;
+    return element === 2017;
   });
   return buffer[0][(temp + 1)];
 }
