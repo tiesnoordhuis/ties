@@ -29,20 +29,321 @@ function doSimultaneous(registers0, registers1, instructions) {
   var calcArrays = [];
   calcArrays[0] = [];
   calcArrays[1] = [];
+  calcArrays[2] = true;
+  calcArrays[3] = 0;
+  calcArrays[4] = 0;
+  var currentPosistionP0 = 0;
   var currentPosistionP1 = 0;
-  var currentPosistionP2 = 0;
-  var p1SendQue = [];
-  var p2SendQue = [];
+  var sendQueP0 = [];
+  var sendQueP1 = [];
+  var activeProgram = 0;
+  var sendNP1 = 0;
   while (ongoing) {
-    calcArray = doInstruction(registers, instructions[currentPosistion], currentPosistion, soundPlayed);
-    ongoing = calcArray[0];
-    currentPosistion = calcArray[1];
-    registers = calcArray[2];
-    soundPlayed = calcArray[3];
+    calcArrays = doInstruction(registers0, registers1, instructions, currentPosistionP0, currentPosistionP1, sendQueP0, sendQueP1, activeProgram, sendNP1);
+    ongoing = calcArrays[2];
+    activeProgram = calcArrays[3];
+    sendNP1 = calcArrays[4]
+    currentPosistionP0 = calcArrays[0][0];
+    currentPosistionP1 = calcArrays[1][0];
+    registers0 = calcArrays[0][1];
+    registers1 = calcArrays[1][1];
+    sendQueP0 = calcArrays[0][2];
+    sendQueP1 = calcArrays[1][2];
   }
 }
 
-function doInstruction(registers, instruction, currentPosistion, soundPlayed) {
+function doInstruction(registers0, registers1, instructions, currentPosistionP0, currentPosistionP1, sendQueP0, sendQueP1, activeProgram, sendNP1) {
+  var ongoing = true;
+  var returnArray = [];
+  var valueX;
+  var valueY;
+  if (activeProgram === 0) {
+    var registersNames = [];
+    var registersValues = [];
+    for (var i = 0; i < registers0.length; i++) {
+      registersNames[i] = registers0[i][0];
+      registersValues[i] = registers0[i][1];
+    }
+    var instruction = instructions[currentPosistionP0].slice();
+    switch (instruction[0]) {
+      case "snd": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        break;
+      }
+      case "set": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "add": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "mul": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "mod": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "rcv": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        break;
+      }
+      case "jgz": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+    }
+    switch (instruction[0]) {
+      case "snd": {
+        sendQueP0.push(valueX);
+        currentPosistionP0 ++;
+        break;
+      }
+      case "set": {
+        registers0[registersNames.indexOf(instruction[1])][1] = valueY;
+        currentPosistionP0 ++;
+        break;
+      }
+      case "add": {
+        registers0[registersNames.indexOf(instruction[1])][1] += valueY;
+        currentPosistionP0 ++;
+        break;
+      }
+      case "mul": {
+        registers0[registersNames.indexOf(instruction[1])][1] = valueX * valueY;
+        currentPosistionP0 ++;
+        break;
+      }
+      case "mod": {
+        registers0[registersNames.indexOf(instruction[1])][1] = valueX % valueY;
+        currentPosistionP0 ++;
+        break;
+      }
+      case "rcv": {
+        if (sendQueP1.length < 1) {
+          activeProgram = 1;
+        } else {
+          registers0[registersNames.indexOf(instruction[1])][1] = sendQueP1.pop();
+          currentPosistionP0 ++;
+        }
+      }
+      case "jgz": {
+        if (valueX > 0) {
+          currentPosistionP0 += valueY;
+          break;
+        } else {
+          currentPosistionP0 ++;
+          break;
+        }
+      }
+      default: {
+        console.log("iets fout gegaan in switch");
+      }
+    }
+  } else if (activeProgram === 1) {
+    var registersNames = [];
+    var registersValues = [];
+    for (var i = 0; i < registers1.length; i++) {
+      registersNames[i] = registers1[i][0];
+      registersValues[i] = registers1[i][1];
+    }
+    var instruction = instructions[currentPosistionP1].slice();
+    switch (instruction[0]) {
+      case "snd": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        break;
+      }
+      case "set": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "add": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "mul": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "mod": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+      case "rcv": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        break;
+      }
+      case "jgz": {
+        if (isNaN(Number(instruction[1]))) {
+          valueX = registersValues[registersNames.indexOf(instruction[1])];
+        } else {
+          valueX = Number(instruction[1]);
+        }
+        if (isNaN(Number(instruction[2]))) {
+          valueY = registersValues[registersNames.indexOf(instruction[2])];
+        } else {
+          valueY = Number(instruction[2]);
+        }
+        break;
+      }
+    }
+    switch (instruction[0]) {
+      case "snd": {
+        sendQueP1.push(valueX);
+        currentPosistionP1 ++;
+        sendNP1 ++;
+        break;
+      }
+      case "set": {
+        registers1[registersNames.indexOf(instruction[1])][1] = valueY;
+        currentPosistionP1 ++;
+        break;
+      }
+      case "add": {
+        registers1[registersNames.indexOf(instruction[1])][1] += valueY;
+        currentPosistionP1 ++;
+        break;
+      }
+      case "mul": {
+        registers1[registersNames.indexOf(instruction[1])][1] = valueX * valueY;
+        currentPosistionP1 ++;
+        break;
+      }
+      case "mod": {
+        registers1[registersNames.indexOf(instruction[1])][1] = valueX % valueY;
+        currentPosistionP1 ++;
+        break;
+      }
+      case "rcv": {
+        if (sendQueP0.length < 1) {
+          activeProgram = 0;
+        } else {
+          registers1[registersNames.indexOf(instruction[1])][1] = sendQueP0.pop();
+          currentPosistionP1 ++;
+        }
+      }
+      case "jgz": {
+        if (valueX > 0) {
+          currentPosistionP1 += valueY;
+          break;
+        } else {
+          currentPosistionP1 ++;
+          break;
+        }
+      }
+      default: {
+        console.log("iets fout gegaan in switch");
+      }
+    }
+  }
+  returnArray[0] = [currentPosistionP0, registers0, sendQueP0];
+  returnArray[1] = [currentPosistionP1, registers1, sendQueP1];
+  returnArray[2] = ongoing;
+  returnArray[3] = activeProgram;
+  returnArray[4] = sendNP1;
+  return returnArray;
+}
+
+function doInstructionOld(registers, instruction, currentPosistion, soundPlayed) {
   var registersNames = [];
   var registersValues = [];
   for (var i = 0; i < registers.length; i++) {
