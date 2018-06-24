@@ -26,9 +26,13 @@ function doAll(x) {
 
 function doSimultaneous(registers0, registers1, instructions) {
   var ongoing = true;
-  var calcArray = [];
-  var currentPosistion = 0;
-  var soundPlayed = 0;
+  var calcArrays = [];
+  calcArrays[0] = [];
+  calcArrays[1] = [];
+  var currentPosistionP1 = 0;
+  var currentPosistionP2 = 0;
+  var p1SendQue = [];
+  var p2SendQue = [];
   while (ongoing) {
     calcArray = doInstruction(registers, instructions[currentPosistion], currentPosistion, soundPlayed);
     ongoing = calcArray[0];
