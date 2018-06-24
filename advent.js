@@ -17,13 +17,28 @@ function doAll(x) {
   for (var i = 0; i < input.length; i++) {
     instructions[i] = input[i].split(" ");
   }
-  var registers = iniRegisters(instructions);
-  console.log(registers);
-  registers = doInstructions(registers, instructions);
+  var registers0 = iniRegisters(instructions, 0);
+  var registers1 = iniRegisters(instructions, 1);
+  console.log(registers0);
+  console.log(registers1);
+  doSimultaneous(registers0, registers1, instructions);
+}
+
+function doSimultaneous(registers0, registers1, instructions) {
+  var ongoing = true;
+  var calcArray = [];
+  var currentPosistion = 0;
+  var soundPlayed = 0;
+  while (ongoing) {
+    calcArray = doInstruction(registers, instructions[currentPosistion], currentPosistion, soundPlayed);
+    ongoing = calcArray[0];
+    currentPosistion = calcArray[1];
+    registers = calcArray[2];
+    soundPlayed = calcArray[3];
+  }
 }
 
 function doInstruction(registers, instruction, currentPosistion, soundPlayed) {
-  console.log("instruction: " + instruction);
   var registersNames = [];
   var registersValues = [];
   for (var i = 0; i < registers.length; i++) {
@@ -120,7 +135,6 @@ function doInstruction(registers, instruction, currentPosistion, soundPlayed) {
   switch (instruction[0]) {
     case "snd": {
       soundPlayed = valueX;
-      console.log(soundPlayed);
       currentPosistion ++;
       break;
     }
@@ -189,7 +203,7 @@ function doInstructions(registers, instructions) {
   return registers;
 }
 
-function iniRegisters(instructions) {
+function iniRegisters(instructions, programN) {
   var returnArray = [];
   var registersLong = [];
   for (var i = 0; i < instructions.length; i++) {
@@ -201,7 +215,11 @@ function iniRegisters(instructions) {
     return index === array.indexOf(element);
   });
   for (var i = 0; i < returnArray.length; i++) {
-    returnArray[i] = [returnArray[i], 0];
+    if (returnArray[i] === "p") {
+      returnArray[i] = [returnArray[i], programN]
+    } else {
+      returnArray[i] = [returnArray[i], 0];
+    }
   }
   return returnArray;
 }
