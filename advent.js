@@ -11,7 +11,7 @@ var input = fs.readFile("input13.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\r\n");
+  var input = x.split("\n");
   input.pop();
   var instructions = [];
   for (var i = 0; i < input.length; i++) {
@@ -49,6 +49,9 @@ function doSimultaneous(registers0, registers1, instructions) {
     registers1 = calcArrays[1][1];
     sendQueP0 = calcArrays[0][2];
     sendQueP1 = calcArrays[1][2];
+    console.log(currentPosistionP0);
+    console.log(currentPosistionP1);
+    console.log(" sendNP1: " + sendNP1);
   }
 }
 
@@ -178,9 +181,10 @@ function doInstruction(registers0, registers1, instructions, currentPosistionP0,
         if (sendQueP1.length < 1) {
           activeProgram = 1;
         } else {
-          registers0[registersNames.indexOf(instruction[1])][1] = sendQueP1.pop();
+          registers0[registersNames.indexOf(instruction[1])][1] = sendQueP1.shift();
           currentPosistionP0 ++;
         }
+        break;
       }
       case "jgz": {
         if (valueX > 0) {
@@ -317,9 +321,10 @@ function doInstruction(registers0, registers1, instructions, currentPosistionP0,
         if (sendQueP0.length < 1) {
           activeProgram = 0;
         } else {
-          registers1[registersNames.indexOf(instruction[1])][1] = sendQueP0.pop();
+          registers1[registersNames.indexOf(instruction[1])][1] = sendQueP0.shift();
           currentPosistionP1 ++;
         }
+        break;
       }
       case "jgz": {
         if (valueX > 0) {
