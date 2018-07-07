@@ -30,13 +30,16 @@ function walkPath(instructions) {
   console.log(walker);
   console.log(instructions[walker.position[0]][walker.position[1]]);
   var lookingForLetters = true;
+  var counter = 1;
   while (lookingForLetters) {
+    counter ++;
     walker = doStep(walker, instructions);
     if (walker.lettersSeen.length > 9) {
       lookingForLetters = false;
     }
   }
   console.log(walker.lettersSeen);
+  console.log("counter: " + counter);
 }
 
 function doStep(walker, instructions) {
