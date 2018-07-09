@@ -11,7 +11,7 @@ var input = fs.readFile("input15.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\n");
+  var input = x.split("\r\n");
   input.pop();
   var particles = buildParticlesObject(input);
   var running = true;
@@ -29,6 +29,7 @@ function doAll(x) {
   }
 }
 
+<<<<<<< HEAD
 function detectCollision(particles) {
   var positions = [];
   for (var i = 0; i < particles.length; i++) {
@@ -39,6 +40,128 @@ function detectCollision(particles) {
 
     }
   }
+=======
+function walkPath(instructions) {
+  var beginPosition = findBeginPosition(instructions);
+  var walker = { position: beginPosition, direction: "S", lettersSeen: ""};
+  console.log(walker);
+  console.log(instructions[walker.position[0]][walker.position[1]]);
+  var lookingForLetters = true;
+  var counter = 1;
+  while (lookingForLetters) {
+    counter ++;
+    walker = doStep(walker, instructions);
+    if (walker.lettersSeen.length > 9) {
+      lookingForLetters = false;
+    }
+  }
+  console.log(walker.lettersSeen);
+  console.log("counter: " + counter);
+}
+
+function doStep(walker, instructions) {
+  walker.position = calcNewPosition(walker);
+  console.log(walker);
+  console.log(instructions[walker.position[0]][walker.position[1]]);
+  switch (instructions[walker.position[0]][walker.position[1]]) {
+    case "vert":
+      walker.direction = goVert(walker);
+      break;
+    case "hori":
+      walker.direction = goHori(walker);
+      break;
+    case "cros":
+      walker.direction = goCros(walker, instructions);
+      break;
+    default:
+      walker = goOverLetter(walker, instructions);
+      break;
+  }
+  return walker;
+}
+
+function goOverLetter(walker, instructions) {
+  walker.lettersSeen += instructions[walker.position[0]][walker.position[1]][1];
+  return walker;
+}
+
+function goCros(walker, instructions) {
+  var oldPosition = [walker.position[0], walker.position[1]];
+  switch (walker.direction) {
+    case "S":
+      if (instructions[oldPosition[0]][(oldPosition[1] - 1)] != "vert" && instructions[oldPosition[0]][(oldPosition[1] - 1)] != 0) {
+        return "W";
+      } else {
+        return "E";
+      }
+      break;
+    case "N":
+      if (instructions[oldPosition[0]][(oldPosition[1] - 1)] != "vert" && instructions[oldPosition[0]][(oldPosition[1] - 1)] != 0) {
+        return "W";
+      } else {
+        return "E";
+      }
+      break;
+    case "E":
+      if (instructions[(oldPosition[0] - 1)][oldPosition[1]] != "hori" && instructions[(oldPosition[0] - 1)][oldPosition[1]] != 0) {
+        return "N";
+      } else {
+        return "S";
+      }
+      break;
+    case "W":
+    if (instructions[(oldPosition[0] - 1)][oldPosition[1]] != "hori" && instructions[(oldPosition[0] - 1)][oldPosition[1]] != 0) {
+      return "N";
+    } else {
+      return "S";
+    }
+      break;
+    default:
+      console.error("unkown direction: " + walker.direction);
+  }
+}
+
+function goVert(walker) {
+  return walker.direction;
+}
+
+function goHori(walker) {
+  return walker.direction;
+}
+
+function calcNewPosition(walker) {
+  var oldPosition = [walker.position[0], walker.position[1]];
+  var returnArray = [];
+  switch (walker.direction) {
+    case "S":
+      returnArray = [(oldPosition[0] + 1), oldPosition[1]];
+      break;
+    case "N":
+      returnArray = [(oldPosition[0] - 1), oldPosition[1]];
+      break;
+    case "E":
+      returnArray = [oldPosition[0], (oldPosition[1] + 1)];
+      break;
+    case "W":
+      returnArray = [oldPosition[0], (oldPosition[1] - 1)];
+      break;
+    default:
+      console.error("unkown direction: " + walker.direction);
+  }
+  return [returnArray[0], returnArray[1]];
+}
+
+function findBeginPosition(instructions) {
+  var topLine = instructions[0].slice();
+  var returnArray = [];
+  topLine.forEach((element, index) => {
+    if (element === "vert") {
+      returnArray = [0, index];
+      console.log("begin found at position: " + index);
+    }
+  })
+  return returnArray;
+>>>>>>> 0cfc475619a2551cb537ad41b1c4e8836a85513e
 }
 
 function findClosest(particles) {
