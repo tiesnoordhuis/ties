@@ -11,7 +11,7 @@ var input = fs.readFile("input15.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\r\n");
+  var input = x.split("\n");
   input.pop();
   var particles = buildParticlesObject(input);
   var running = true;
@@ -21,8 +21,8 @@ function doAll(x) {
     particles = detectCollision(particles);
     particles = renderFrame(particles);
     closestParticle = findClosest(particles);
-    console.log(closestParticle);
-    if (cycles > 10000000) {
+    console.log("aantal particles: " + particles.length);
+    if (cycles > 1) {
       running = false;
     }
     cycles ++;
@@ -32,13 +32,32 @@ function doAll(x) {
 function detectCollision(particles) {
   var positions = [];
   for (var i = 0; i < particles.length; i++) {
-    positions[i] = particles[i].position.join();
+    positions[i] = particles[i].position[0] + particles[i].position[1] + particles[i].position[2];
+    console.log("position op index " + i + " is: " + positions[i]);
   }
+  var collisionIndexes = [];
   for (var i = 0; i < positions.length; i++) {
-    if (true) {
-
+    var testCase = positions[i];
+    var testArray = [];
+    testArray = positions.slice(i - 1);
+    testArray.concat(positions.slice(i + 1, positions.length - 1));
+    if (testArray.includes(testCase)) {
+      collisionIndexes.push(i);
     }
   }
+  var returnArray = deleteCollisions(collisionIndexes, particles);
+  return returnArray;
+}
+
+function deleteCollisions(collisionIndexes, particles) {
+  console.log(collisionIndexes);
+  if (collisionIndexes.length === 0) {
+    return particles;
+  }
+  for (var i = collisionIndexes.length - 1; i >= 0; i--) {
+    particles.splice(collisionIndexes[i], 1);
+  }
+  return particles;
 }
 
 function findClosest(particles) {
