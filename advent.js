@@ -11,7 +11,7 @@ var input = fs.readFile("input15.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\n");
+  var input = x.split("\r\n");
   input.pop();
   var particles = buildParticlesObject(input);
   var running = true;
@@ -21,8 +21,8 @@ function doAll(x) {
     particles = detectCollision(particles);
     particles = renderFrame(particles);
     closestParticle = findClosest(particles);
-    console.log("aantal particles: " + particles.length);
-    if (cycles > 1) {
+    console.log("aantal particles: " + particles.length + " in cycle " + cycles);
+    if (cycles > 300) {
       running = false;
     }
     cycles ++;
@@ -32,31 +32,47 @@ function doAll(x) {
 function detectCollision(particles) {
   var positions = [];
   for (var i = 0; i < particles.length; i++) {
-    positions[i] = particles[i].position[0] + particles[i].position[1] + particles[i].position[2];
-    console.log("position op index " + i + " is: " + positions[i]);
+    positions[i] = [particles[i].position[0], particles[i].position[1], particles[i].position[2], "string"].join("");
+    //console.log("position op index " + i + " is: " + positions[i]);
   }
   var collisionIndexes = [];
   for (var i = 0; i < positions.length; i++) {
-    var testCase = positions[i];
-    var testArray = [];
-    testArray = positions.slice(i - 1);
-    testArray.concat(positions.slice(i + 1, positions.length - 1));
-    if (testArray.includes(testCase)) {
-      collisionIndexes.push(i);
+    var collisionIndexesPoint = detectCollisionPoint(i, positions);
+    if (collisionIndexesPoint.length > 1) {
+      console.log("gevonden collisions: " + collisionIndexesPoint);
+      console.log("positions: ");
+      for (var j = 0; j < collisionIndexesPoint.length; j++) {
+        console.log(positions[collisionIndexesPoint[j]]);
+      }
+      collisionIndexes.concat(collisionIndexesPoint)
     }
   }
   var returnArray = deleteCollisions(collisionIndexes, particles);
   return returnArray;
 }
 
+function detectCollisionPoint(index, positions) {
+  var element = positions[index].slice();
+  var collisionIndexesPoint = [];
+  var firstIndex = positions.indexOf(element);
+  while (firstIndex != -1) {
+    //console.log("firstIndex: " + firstIndex);
+    collisionIndexesPoint.push(firstIndex);
+    firstIndex = positions.indexOf(element, firstIndex + 1);
+  }
+  //console.log("collisionIndexesPoint return: " + collisionIndexesPoint);
+  return collisionIndexesPoint;
+}
+
 function deleteCollisions(collisionIndexes, particles) {
-  console.log(collisionIndexes);
+  console.log("delete collisionIndexes: " + collisionIndexes);
   if (collisionIndexes.length === 0) {
     return particles;
   }
   for (var i = collisionIndexes.length - 1; i >= 0; i--) {
-    particles.splice(collisionIndexes[i], 1);
+    var deletedParticeles = particles.splice(collisionIndexes[i], 1);
   }
+  console.log("deletedParticeles: " + deletedParticeles);
   return particles;
 }
 
