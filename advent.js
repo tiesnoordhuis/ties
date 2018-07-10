@@ -11,7 +11,7 @@ var input = fs.readFile("input15.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\r\n");
+  var input = x.split("\n");
   input.pop();
   var particles = buildParticlesObject(input);
   var running = true;
@@ -22,7 +22,7 @@ function doAll(x) {
     particles = renderFrame(particles);
     closestParticle = findClosest(particles);
     console.log("aantal particles: " + particles.length + " in cycle " + cycles);
-    if (cycles > 300) {
+    if (cycles > 300000) {
       running = false;
     }
     cycles ++;
@@ -39,12 +39,10 @@ function detectCollision(particles) {
   for (var i = 0; i < positions.length; i++) {
     var collisionIndexesPoint = detectCollisionPoint(i, positions);
     if (collisionIndexesPoint.length > 1) {
-      console.log("gevonden collisions: " + collisionIndexesPoint);
-      console.log("positions: ");
       for (var j = 0; j < collisionIndexesPoint.length; j++) {
-        console.log(positions[collisionIndexesPoint[j]]);
+        collisionIndexes.push(collisionIndexesPoint[j])
       }
-      collisionIndexes.concat(collisionIndexesPoint)
+      //console.log("collisionIndexes concated: " + collisionIndexes);
     }
   }
   var returnArray = deleteCollisions(collisionIndexes, particles);
@@ -52,11 +50,12 @@ function detectCollision(particles) {
 }
 
 function detectCollisionPoint(index, positions) {
-  var element = positions[index].slice();
+  //console.log("position voor collision detection" + positions[index]);
+  var element = positions[index];
   var collisionIndexesPoint = [];
   var firstIndex = positions.indexOf(element);
   while (firstIndex != -1) {
-    //console.log("firstIndex: " + firstIndex);
+    //console.log("firstIndex: " + firstIndex + " of position: " + element);
     collisionIndexesPoint.push(firstIndex);
     firstIndex = positions.indexOf(element, firstIndex + 1);
   }
@@ -66,14 +65,33 @@ function detectCollisionPoint(index, positions) {
 
 function deleteCollisions(collisionIndexes, particles) {
   console.log("delete collisionIndexes: " + collisionIndexes);
-  if (collisionIndexes.length === 0) {
+  var collisionIndexesNorm = singlesListCollisionIndexes(collisionIndexes);
+  console.log("delete collisionIndexes Norm: " + collisionIndexesNorm);
+  if (collisionIndexesNorm.length === 0) {
     return particles;
   }
-  for (var i = collisionIndexes.length - 1; i >= 0; i--) {
-    var deletedParticeles = particles.splice(collisionIndexes[i], 1);
+  for (var i = collisionIndexesNorm.length - 1; i >= 0; i--) {
+    var deletedParticeles = particles.splice(collisionIndexesNorm[i], 1);
   }
-  console.log("deletedParticeles: " + deletedParticeles);
+  //console.log("deletedParticeles: " + deletedParticeles);
   return particles;
+}
+
+function singlesListCollisionIndexes(collisionIndexes) {
+  var returnArray = [];
+  var duplicates = [];
+  returnArray = collisionIndexes.sort((a, b) => {
+    return a - b;
+  })
+  for (var i = 1; i < returnArray.length; i++) {
+    if (returnArray[i] === returnArray[i - 1]) {
+      duplicates.push(i);
+    }
+  }
+  for (var i = duplicates.length - 1; i >= 0; i--) {
+    var deletedParticeles = returnArray.splice(duplicates[i], 1);
+  }
+  return returnArray;
 }
 
 function findClosest(particles) {
