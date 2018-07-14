@@ -16,8 +16,55 @@ function doAll(x) {
   //console.log(input);
   const rules2 = buildRules2Object(input);
   const rules3 = buildRules3Object(input);
-  console.log(rules3);
-  console.log(rules3[15].input);
+  const startGrid = [[".", "#", "."], [".", ".", "#"], ["#", "#", "#"]];
+  var grid = startGrid;
+  const iterationsN = 5;
+  for (var iteration = 0; iteration < iterationsN; iteration++) {
+    grid = makeNextGrid(grid);
+  }
+}
+
+function makeNextGrid(grid) {
+  var sizeGrid = calcSizeGrid(grid);
+  var sizeCatagory = selectCatagory(sizeGrid);
+  console.log("sizeGrid: " + sizeGrid + " , " + sizeCatagory);
+  if (needsSplitting(sizeGrid, sizeCatagory)) {
+    grid = splitGrid(grid, sizeCatagory);
+  }
+}
+
+function splitGrid(grid, sizeCatagory) {
+  if (sizeCatagory === 2) {
+    return splitGridCatagory2(grid);
+  }
+  return splitGridCatagory3(grid);
+}
+
+function splitGridCatagory2(grid) {
+  var returnArray = [];
+  var splitN = grid[0].length / 2;
+  console.log("splitN: " + splitN);
+  for (var gridPart = 0; gridPart < splitN; gridPart ++) {
+    returnArray.push() 
+  }
+}
+
+function needsSplitting(sizeGrid, sizeCatagory) {
+  if (sizeGrid === sizeCatagory) {
+    return false;
+  }
+  return true;
+}
+
+function selectCatagory(sizeGrid) {
+  if (sizeGrid % 2 === 0) {
+    return 2;
+  }
+  return 3;
+}
+
+function calcSizeGrid(grid) {
+  return grid[0].length;
 }
 
 function buildRules2Object(input) {
