@@ -18,18 +18,32 @@ function doAll(x) {
   const rules3 = buildRules3Object(input);
   const startGrid = [[".", "#", "."], [".", ".", "#"], ["#", "#", "#"]];
   var grid = startGrid;
+  console.log("startGrid: " + typeof grid);
+  console.log(grid);
   const iterationsN = 5;
   for (var iteration = 0; iteration < iterationsN; iteration++) {
-    grid = makeNextGrid(grid);
+    console.log("iterationsN loop grid: " + grid);
+    grid = makeNextGrid(grid, rules2, rules3);
   }
 }
 
-function makeNextGrid(grid) {
+function makeNextGrid(grid, rules2, rules3) {
   var sizeGrid = calcSizeGrid(grid);
   var sizeCatagory = selectCatagory(sizeGrid);
   console.log("sizeGrid: " + sizeGrid + " , " + sizeCatagory);
   if (needsSplitting(sizeGrid, sizeCatagory)) {
     grid = splitGrid(grid, sizeCatagory);
+  } else {
+    grid[0] = grid;
+  }
+  if (sizeCatagory === 2) {
+    for (var i = 0; i < grid.length; i++) {
+      grid[i] = enhanceGrid2(grid[i], rules2);
+    }
+  } else if (sizeCatagory === 3) {
+    for (var i = 0; i < grid.length; i++) {
+      grid[i] = enhanceGrid3(grid[i], rules3);
+    }
   }
 }
 
@@ -40,19 +54,43 @@ function splitGrid(grid, sizeCatagory) {
   return splitGridCatagory3(grid);
 }
 
+function splitGridCatagory3(grid) {
+  var returnArray = [];
+  var splitN = grid[0].length / 3;
+  console.log("splitN: " + splitN);
+  for (var gridRow = 0; gridRow < splitN; gridRow ++) {
+    var buildGrid = [];
+    for (var gridColumn = 0; gridColumn < splitN; gridColumn++) {
+      buildGrid[0] = [grid[gridRow * 3][gridColumn * 3], grid[gridRow * 3][gridColumn * 3 + 1], grid[gridRow * 3][gridColumn * 3 + 2]];
+      buildGrid[1] = [grid[gridRow * 3 + 1][gridColumn * 3], grid[gridRow * 3 + 1][gridColumn * 3 + 1], grid[gridRow * 3 + 1][gridColumn * 3 + 2]];
+      buildGrid[2] = [grid[gridRow * 3 + 2][gridColumn * 3], grid[gridRow * 3 + 2][gridColumn * 3 + 1], grid[gridRow * 3 + 2][gridColumn * 3 + 2]];
+      returnArray.push(buildGrid.slice());
+    }
+  }
+  console.log("new grid: " + returnArray);
+  return returnArray;
+}
+
 function splitGridCatagory2(grid) {
   var returnArray = [];
   var splitN = grid[0].length / 2;
   console.log("splitN: " + splitN);
-  for (var gridPart = 0; gridPart < splitN; gridPart ++) {
-    returnArray.push() 
+  for (var gridRow = 0; gridRow < splitN; gridRow ++) {
+    for (var gridColumn = 0; gridColumn < splitN; gridColumn++) {
+      returnArray.push([[grid[gridRow * 2][gridColumn * 2], grid[gridRow * 2][gridColumn * 2 + 1]][grid[gridRow * 2 + 1][gridColumn * 2], grid[gridRow * 2 + 1][gridColumn * 2 + 1]]]);
+    }
   }
+  console.log("new grid: " + returnArray);
+  return returnArray;
 }
 
 function needsSplitting(sizeGrid, sizeCatagory) {
+  console.log("needsSplitting?");
   if (sizeGrid === sizeCatagory) {
+    console.log("false");
     return false;
   }
+  console.log("true");
   return true;
 }
 

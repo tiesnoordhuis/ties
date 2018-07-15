@@ -1,15 +1,22 @@
-function detectCollisionPoint(index, positions) {
-  console.log("positions voor collision detection" + positions);
-  var element = positions[index];
-  var collisionIndexesPoint = [];
-  var firstIndex = positions.indexOf(element);
-  while (firstIndex != -1) {
-    console.log("firstIndex: " + firstIndex);
-    collisionIndexesPoint.push(firstIndex);
-    firstIndex = positions.indexOf(element, firstIndex + 1);
+function splitGridCatagory3(grid) {
+  var returnArray = [];
+  var splitN = grid[0].length / 3;
+  console.log("splitN: " + splitN);
+  for (var gridRow = 0; gridRow < splitN; gridRow ++) {
+    var buildGrid = [];
+    for (var gridColumn = 0; gridColumn < splitN; gridColumn++) {
+      buildGrid[0] = [grid[gridRow * 3][gridColumn * 3], grid[gridRow * 3][gridColumn * 3 + 1], grid[gridRow * 3][gridColumn * 3 + 2]];
+      buildGrid[1] = [grid[gridRow * 3 + 1][gridColumn * 3], grid[gridRow * 3 + 1][gridColumn * 3 + 1], grid[gridRow * 3 + 1][gridColumn * 3 + 2]];
+      buildGrid[2] = [grid[gridRow * 3 + 2][gridColumn * 3], grid[gridRow * 3 + 2][gridColumn * 3 + 1], grid[gridRow * 3 + 2][gridColumn * 3 + 2]];
+      returnArray.push(buildGrid.slice());
+    }
   }
-  console.log("collisionIndexesPoint return: " + collisionIndexesPoint);
-  return collisionIndexesPoint;
+  console.log("new grid: ");
+  console.log(returnArray);
+  return returnArray;
 }
 
-detectCollisionPoint(0, [0, 1, 2, 0, 0, 4, 0, 2, 3]);
+var startGrid = [[".", "#", ".", ".", "#", "."], [".", ".", "#", ".", "#", "."], ["#", "#", "#", ".", "#", "."], [".", "#", ".", ".", "#", "."], [".", ".", "#", ".", "#", "."], ["#", "#", "#", ".", "#", "."]];
+console.log(startGrid);
+startGrid = splitGridCatagory3(startGrid);
+console.log(startGrid[0]);
