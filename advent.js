@@ -11,14 +11,18 @@ var input = fs.readFile("input16.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\r\n");
+  var input = x.split("\n");
   input.pop();
   //console.log(input);
   const rules2 = buildRules2Object(input);
+  console.log("rules 2 :");
+  console.log(rules2);
   const rules3 = buildRules3Object(input);
+  console.log("rules 3 : ");
+  console.log(rules3);
   const startGrid = [[".", "#", "."], [".", ".", "#"], ["#", "#", "#"]];
   var grid = startGrid;
-  console.log("startGrid: " + typeof grid);
+  console.log("startGrid: ");
   console.log(grid);
   const iterationsN = 5;
   for (var iteration = 0; iteration < iterationsN; iteration++) {
@@ -34,8 +38,10 @@ function makeNextGrid(grid, rules2, rules3) {
   if (needsSplitting(sizeGrid, sizeCatagory)) {
     grid = splitGrid(grid, sizeCatagory);
   } else {
-    grid[0] = grid;
+    grid = [grid];
   }
+  console.log("makeNextGrid: ");
+  console.log(grid);
   if (sizeCatagory === 2) {
     for (var i = 0; i < grid.length; i++) {
       grid[i] = enhanceGrid2(grid[i], rules2);
@@ -45,6 +51,58 @@ function makeNextGrid(grid, rules2, rules3) {
       grid[i] = enhanceGrid3(grid[i], rules3);
     }
   }
+  grid = normalizeGrid(grid, sizeGrid, sizeCatagory);
+  return grid;
+}
+
+function normalizeGrid(grid, sizeCatagory) {
+  var returnArray = [];
+  if (sizeCatagory === 2) {
+    returnArray = normalizeGrid3(grid);
+    return returnArray;
+  }
+  returnArray = normalizeGrid2(grid);
+  return returnArray;
+}
+
+function normalizeGrid3(grid) {
+  var returnArray = [];
+  var totalGrids = grid.length;
+  var sizeGrid = Math.sqrt(totalGrids);
+  for (var row = 0; row < sizeGrid; row++) {
+    var buildRow1 = row * 3;
+    returnArray[buildRow1] = [];
+    for (var i = 0; i < sizeGrid; i++) {
+      returnArray[buildRow1].push()
+    }
+
+  }
+}
+
+function enhanceGrid2(gridPart, rules2) {
+  for (var i = 0; i < rules2.length; i++) {
+    console.log("rules 2 check input + type: " + typeof rules2[i].input);
+    console.log(rules2[i].input);
+    if (rules2[i].input.includes(gridPart)) {
+      return rules2[i].output;
+    }
+  }
+  console.error("no match found");
+}
+
+function enhanceGrid3(gridPart, rules3) {
+  for (var i = 0; i < rules3.length; i++) {
+    console.log("rules 3 check input + type: " + typeof rules3[i].input);
+    console.log(gridPart);
+    for (var inputs = 0; inputs < 6; inputs++) {
+      console.log(rules3[i].input[inputs]);
+      if (rules3[i].input[inputs] == gridPart) {
+        console.log("plss werk!!!!!!!!!!!!!!");
+        return rules3[i].output;
+      }
+    }
+  }
+  console.error("no match found");
 }
 
 function splitGrid(grid, sizeCatagory) {
