@@ -11,7 +11,7 @@ var input = fs.readFile("input16.txt", "utf8", (err, data) => {
 });
 
 function doAll(x) {
-  var input = x.split("\n");
+  var input = x.split("\r\n");
   input.pop();
   //console.log(input);
   const rules2 = buildRules2Object(input);
@@ -51,6 +51,8 @@ function makeNextGrid(grid, rules2, rules3) {
       grid[i] = enhanceGrid3(grid[i], rules3);
     }
   }
+  console.log("after enhance: ");
+  console.log(grid);
   grid = normalizeGrid(grid, sizeGrid, sizeCatagory);
   return grid;
 }
@@ -65,7 +67,16 @@ function normalizeGrid(grid, sizeCatagory) {
   return returnArray;
 }
 
+function normalizeGrid2(grid) {
+  if (grid.length === 1) {
+    grid = grid[0];
+  }
+}
+
 function normalizeGrid3(grid) {
+  if (grid.lenght === 1) {
+    grid = grid[0];
+  }
   var returnArray = [];
   var totalGrids = grid.length;
   var sizeGrid = Math.sqrt(totalGrids);
@@ -80,24 +91,28 @@ function normalizeGrid3(grid) {
 }
 
 function enhanceGrid2(gridPart, rules2) {
+  var gridpartCompare = gridPart[0].concat(gridPart[1])
   for (var i = 0; i < rules2.length; i++) {
-    console.log("rules 2 check input + type: " + typeof rules2[i].input);
-    console.log(rules2[i].input);
-    if (rules2[i].input.includes(gridPart)) {
-      return rules2[i].output;
+    for (var inputs = 0; inputs < 8; inputs++) {
+      var compare = rules2[i].input[inputs];
+      compare = compare[0].concat(compare[1]);
+      if (compare.every((v, i) => v === gridpartCompare[i])) {
+        console.log("match found");
+        return rules2[i].output;
+      }
     }
   }
   console.error("no match found");
 }
 
 function enhanceGrid3(gridPart, rules3) {
+  var gridpartCompare = gridPart[0].concat(gridPart[1], gridPart[2])
   for (var i = 0; i < rules3.length; i++) {
-    console.log("rules 3 check input + type: " + typeof rules3[i].input);
-    console.log(gridPart);
     for (var inputs = 0; inputs < 8; inputs++) {
-      console.log(rules3[i].input[inputs]);
-      if (rules3[i].input[inputs] == gridPart) {
-        console.log("plss werk!!!!!!!!!!!!!!");
+      var compare = rules3[i].input[inputs];
+      compare = compare[0].concat(compare[1], compare[2]);
+      if (compare.every((v, i) => v === gridpartCompare[i])) {
+        console.log("match found");
         return rules3[i].output;
       }
     }
