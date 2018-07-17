@@ -94,7 +94,7 @@ function enhanceGrid3(gridPart, rules3) {
   for (var i = 0; i < rules3.length; i++) {
     console.log("rules 3 check input + type: " + typeof rules3[i].input);
     console.log(gridPart);
-    for (var inputs = 0; inputs < 6; inputs++) {
+    for (var inputs = 0; inputs < 8; inputs++) {
       console.log(rules3[i].input[inputs]);
       if (rules3[i].input[inputs] == gridPart) {
         console.log("plss werk!!!!!!!!!!!!!!");
@@ -184,7 +184,7 @@ function buildRules2Object(input) {
 function extendInputs2(singleInput) {
   var rotatedInputs2 = rotateInputs2(singleInput);
   var flippedInputs2 = flipInputs2(singleInput);
-  var returnArray = [singleInput, rotatedInputs2[0], rotatedInputs2[1], rotatedInputs2[2], flippedInputs2[0], flippedInputs2[1]];
+  var returnArray = [singleInput, rotatedInputs2[0], rotatedInputs2[1], rotatedInputs2[2], flippedInputs2[0], flippedInputs2[1], flippedInputs2[2], flippedInputs2[3]];
   return returnArray;
 }
 
@@ -205,10 +205,8 @@ function flipInputs2(singleInput) {
   var flipHori = [];
   flipHori[0] = singleInput[1];
   flipHori[1] = singleInput[0];
-  var flipVerti = [];
-  flipVerti[0] = [singleInput[0][1], singleInput[0][0]];
-  flipVerti[1] = [singleInput[1][1], singleInput[1][0]];
-  return [flipHori, flipVerti];
+  var extraInputs = rotateInputs2(flipHori);
+  return [flipHori, extraInputs[0], extraInputs[1], extraInputs[2]];
 }
 
 function buildRules3Object(input) {
@@ -234,7 +232,7 @@ function buildRules3Object(input) {
 function extendInputs3(singleInput) {
   var rotatedInputs3 = rotateInputs3(singleInput);
   var flippedInputs3 = flipInputs3(singleInput);
-  var returnArray = [singleInput, rotatedInputs3[0], rotatedInputs3[1], rotatedInputs3[2], flippedInputs3[0], flippedInputs3[1]];
+  var returnArray = [singleInput, rotatedInputs3[0], rotatedInputs3[1], rotatedInputs3[2], flippedInputs3[0], flippedInputs3[1], flippedInputs3[2], flippedInputs3[3]];
   return returnArray;
 }
 
@@ -259,9 +257,6 @@ function flipInputs3(singleInput) {
   flipHori[0] = singleInput[2];
   flipHori[1] = singleInput[1];
   flipHori[2] = singleInput[0];
-  var flipVerti = [];
-  flipVerti[0] = [singleInput[0][2], singleInput[0][1], singleInput[0][0]];
-  flipVerti[1] = [singleInput[1][2], singleInput[1][1], singleInput[1][0]];
-  flipVerti[2] = [singleInput[2][2], singleInput[2][1], singleInput[2][0]];
-  return [flipHori, flipVerti];
+  var extraInputs = rotateInputs3(flipHori);
+  return [flipHori, extraInputs[0], extraInputs[1], extraInputs[2]];
 }
